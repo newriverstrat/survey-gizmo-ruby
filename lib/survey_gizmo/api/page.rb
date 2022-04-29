@@ -1,6 +1,6 @@
-require 'survey_gizmo/v4/question'
+require 'survey_gizmo/api/question'
 
-module SurveyGizmo::V4
+module SurveyGizmo::API
   class Page
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle
@@ -12,6 +12,9 @@ module SurveyGizmo::V4
     attribute :survey_id,     Integer
     attribute :questions,     Array[Question]
 
+    # v5 fields
+    attribute :title,         String
+
     @route = '/survey/:survey_id/surveypage'
 
     def survey
@@ -20,6 +23,7 @@ module SurveyGizmo::V4
 
     def questions
       @questions.each { |q| q.attributes = children_params }
+      return @questions if SurveyGizmo.configuration.v5?
       return @questions if @questions.all? { |q| q.sub_question_skus.all? { |sku| @questions.find { |q| q.id == sku } } }
 
       # See note on broken subquestions in resource.rb.

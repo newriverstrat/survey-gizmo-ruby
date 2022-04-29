@@ -1,12 +1,13 @@
-require 'survey_gizmo/v5/page'
+require 'survey_gizmo/api/page'
 
-module SurveyGizmo::V5
+module SurveyGizmo::API
   class Survey
     include SurveyGizmo::Resource
 
     attribute :id,             Integer
     attribute :team,           Array
     attribute :type,           String
+    attribute :_subtype,       String
     attribute :status,         String
     attribute :forward_only,   Boolean
     attribute :title,          String
@@ -19,6 +20,7 @@ module SurveyGizmo::V5
     attribute :statistics,     Array
     attribute :created_on,     DateTime
     attribute :modified_on,    DateTime
+    attribute :copy,           Boolean
     # See comment in the #pages method for why this :pages can't be an attribute
     # attribute :pages,          Array[Page]
 
@@ -40,8 +42,12 @@ module SurveyGizmo::V5
     end
 
     def actual_questions
-      questions.select do |q|
-        q.base_type == 'Question' || q.base_type == 'SurveyQuestion'
+      if SurveyGizmo.configuration.v5?
+        questions.select do |q|
+          q.base_type == 'Question' || q.base_type == 'SurveyQuestion'
+        end
+      else
+        questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic|media|script|javascript)$/ }
       end
     end
 

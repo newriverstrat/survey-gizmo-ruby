@@ -1,4 +1,4 @@
-module SurveyGizmo::V5
+module SurveyGizmo::API
   class Option
     include SurveyGizmo::Resource
     include SurveyGizmo::MultilingualTitle
@@ -11,7 +11,7 @@ module SurveyGizmo::V5
     attribute :properties,    Hash
 
     # v5 fields
-    attribute :title,       String
+    attribute :title,         String
 
     @route = '/survey/:survey_id/surveypage/:page_id/surveyquestion/:question_id/surveyoption'
   end

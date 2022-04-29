@@ -51,7 +51,7 @@ describe 'Survey Gizmo Resource V5' do
     end
   end
 
-  describe SurveyGizmo::V5::Survey do
+  describe SurveyGizmo::API::Survey do
     let(:create_attributes) { { title: 'Spec', type: 'survey', status: 'In Design' } }
     let(:get_attributes)    { create_attributes.merge(first_params) }
     let(:update_attributes) { { title: 'Updated'} }
@@ -79,7 +79,7 @@ describe 'Survey Gizmo Resource V5' do
     end
   end
 
-  describe SurveyGizmo::V5::Question do
+  describe SurveyGizmo::API::Question do
     let(:base_params)       { {survey_id: 1234, page_id: 1} }
     let(:create_attributes) { base_params.merge(title: 'Spec Question', type: 'radio', properties: { 'required' => true, 'option_sort' => false }) }
     let(:update_attributes) { base_params.merge(title: 'Updated') }
@@ -195,7 +195,7 @@ describe 'Survey Gizmo Resource V5' do
     end
   end
 
-  describe SurveyGizmo::V5::Option do
+  describe SurveyGizmo::API::Option do
     let(:survey_and_page)   { {survey_id: 1234, page_id: 1} }
     let(:create_attributes) { survey_and_page.merge(question_id: 1, title: 'Spec Question', value: 'Spec Answer') }
     let(:update_attributes) { survey_and_page.merge(question_id: 1, title: 'Updated') }
@@ -211,7 +211,7 @@ describe 'Survey Gizmo Resource V5' do
     it_should_behave_like 'an object with errors'
   end
 
-  describe SurveyGizmo::V5::Page do
+  describe SurveyGizmo::API::Page do
     let(:create_attributes) { {:survey_id => 1234, :title => 'Spec Page' } }
     let(:get_attributes)    { create_attributes.merge(:id => 1) }
     let(:update_attributes) { {:survey_id => 1234, :title => 'Updated'} }
@@ -226,7 +226,7 @@ describe 'Survey Gizmo Resource V5' do
     it_should_behave_like 'an object with errors'
   end
 
-  describe SurveyGizmo::V5::Response do
+  describe SurveyGizmo::API::Response do
     # date_submitted is specified as DateTime, not Time
     let(:create_attributes) { {:survey_id => 1234, :date_submitted => "2015-04-15 05:46:30 -0400" } }
     let(:create_attributes_to_compare) { create_attributes.merge(:date_submitted => DateTime.parse("2015-04-15 05:46:30 -0400")) }
@@ -273,17 +273,17 @@ describe 'Survey Gizmo Resource V5' do
 
       it 'should propagate time, survey_id, and response_id' do
         response = described_class.new(
-          answers: answers.select { |k, v| k == 5},
+          survey_data: answers.select { |k, v| k == 5},
           survey_id: survey_id,
           id: response_id,
-          submitted_at: timestamp
+          date_submitted: timestamp
         )
         expect(response.parsed_answers.map { |a| a.to_hash }).to eq([ { survey_id: survey_id, response_id: response_id, question_id: 5, answer_text: "VERY important", submitted_at: timestamp }])
       end
     end
   end
 
-  describe SurveyGizmo::V5::AccountTeams do
+  describe SurveyGizmo::API::AccountTeams do
     pending('Need an account with admin privileges to test this')
     let(:create_attributes) { { team_name: 'team' } }
     let(:get_attributes)    { create_attributes.merge(id: 1234) }
