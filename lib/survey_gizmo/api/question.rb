@@ -16,8 +16,15 @@ module SurveyGizmo::API
     attribute :page_id,            Integer, default: 1
     attribute :sub_question_skus,  Array
     attribute :parent_question_id, Integer
-
     alias_attribute :_subtype, :type
+
+    # v5 fields
+    attribute :base_type,          String
+    attribute :subtype,            String
+    attribute :varname,            Array
+    attribute :has_showhide_deps,  Boolean
+    attribute :comment,            Boolean
+    # attribute :sub_questions,      Array[Question]
 
     @route = {
       get:    '/survey/:survey_id/surveyquestion/:id',
@@ -25,6 +32,11 @@ module SurveyGizmo::API
       update: '/survey/:survey_id/surveypage/:page_id/surveyquestion/:id'
     }
     @route[:delete] = @route[:update]
+
+    def initialize(attrs = {})
+      @v5_sub_questions = attrs[:sub_questions] || [] if SurveyGizmo.configuration.v5?
+      super(attrs)
+    end
 
     def survey
       @survey ||= Survey.first(id: survey_id)
@@ -50,6 +62,8 @@ module SurveyGizmo::API
     end
 
     def sub_questions
+      return @v5_sub_questions if SurveyGizmo.configuration.v5?
+
       @sub_questions ||= sub_question_skus.map do |sku|
         SurveyGizmo.configuration.logger.debug("Have to do individual load of sub question #{sku}...")
         subquestion = Question.first(survey_id: survey_id, id: sku)

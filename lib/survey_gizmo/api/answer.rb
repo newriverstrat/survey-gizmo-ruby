@@ -13,9 +13,29 @@ module SurveyGizmo::API
     attribute :other_text,    String
     attribute :question_pipe, String
 
+    # v5 fields
+    attribute :question_text, String
+    attribute :question_type, String
+    attribute :options,       Array[Option]
+
     def initialize(attrs = {})
       self.attributes = attrs
+      SurveyGizmo.configuration.v5? ? parse_v5_answers : parse_v4_answers
+    end
 
+    def parse_v5_answers
+      self.question_id = value['id']
+      self.question_text = value['question']
+      self.question_type = value['type']
+
+      if value['options']
+        self.answer_text = selected_options_texts.join(', ')
+      else
+        self.answer_text = value['answer']
+      end
+    end
+
+    def parse_v4_answers
       case key
       when /\[question\((\d+)\),\s*option\((\d+|"\d+-other")\)\]/
         self.question_id, self.option_id = $1, $2
@@ -44,6 +64,22 @@ module SurveyGizmo::API
       if option_id && !option_id.is_a?(Integer)
         fail "Bad option_id #{option_id} (class: #{option_id.class}) for #{attrs}!" if option_id.to_i == 0
         self.option_id = option_id.to_i
+      end
+    end
+
+    def selected_options_texts
+      selected_options.map do |opt|
+        opt['answer']
+      end
+    end
+
+    def selected_options
+      value['options'].values.reject { |opt| opt['answer'].nil? }.map do |opt|
+        Option.new(attributes.merge(
+          id: opt['id'],
+          value: opt['answer'],
+          title: opt['option']
+        ))
       end
     end
 

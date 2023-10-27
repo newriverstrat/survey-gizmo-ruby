@@ -42,7 +42,13 @@ module SurveyGizmo::API
     end
 
     def actual_questions
-      questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic|media|script|javascript)$/ }
+      if SurveyGizmo.configuration.v5?
+        questions.select do |q|
+          q.base_type == 'Question' || q.base_type == 'SurveyQuestion'
+        end
+      else
+        questions.reject { |q| q.type =~ /^(instructions|urlredirect|logic|media|script|javascript)$/ }
+      end
     end
 
     def responses(conditions = {})

@@ -23,6 +23,15 @@ module SurveyGizmo::API
     attribute :surveycampaign,  Integer
     attribute :copy,            Boolean
 
+    # v5 fields
+    attribute :token_variables, Array
+    attribute :invite_id,       Integer
+    attribute :link_type,       String
+    attribute :date_created,    DateTime
+    attribute :date_modified,   DateTime
+    attribute :link_open_date,  DateTime
+    attribute :link_close_date, DateTime
+
     @route = '/survey/:survey_id/surveycampaign'
 
     def contacts(conditions = {})

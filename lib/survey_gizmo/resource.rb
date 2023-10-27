@@ -53,7 +53,7 @@ module SurveyGizmo
 
             # Sub questions are not pulled by default so we have to retrieve them manually.  SurveyGizmo
             # claims they will fix this bug and eventually all questions will be returned in one request.
-            if self == SurveyGizmo::API::Question
+            if self == SurveyGizmo::API::Question && !SurveyGizmo.configuration.v5?
               collection += collection.flat_map { |question| question.sub_questions }
             end
 

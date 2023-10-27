@@ -12,6 +12,10 @@ module SurveyGizmo::API
     attribute :default_role,  String
     attribute :status,        String
 
+    # v5 fields
+    attribute :team_name,     String
+    attribute :description,   String
+
     @route = '/accountteams'
   end
 end

@@ -19,6 +19,16 @@ module SurveyGizmo::API
     attribute :datecreated,       DateTime
     attribute :datemodified,      DateTime
 
+    # v5 fields
+    attribute :type,              String
+    attribute :subtype,           String
+    attribute :message_type,      String
+    attribute :footer,            String
+    attribute :embed_question,    Boolean
+    attribute :disable_styles,    Boolean
+    attribute :date_created,      DateTime
+    attribute :date_modified,     DateTime
+
     @route = '/survey/:survey_id/surveycampaign/:campaign_id/emailmessage'
   end
 end
